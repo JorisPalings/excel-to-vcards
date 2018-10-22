@@ -4,7 +4,7 @@ Command-line tool to easily convert Excel files (.csv, .xls, .xlsx) to vCards (.
 
 ## Prerequisites
 
-[Node.js and npm](https://nodejs.org/en/) are required to install and run the script.
+[npm and Node.js](https://nodejs.org/en/) are required to install and run the script.
 
 ## Installation
 
