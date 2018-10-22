@@ -5,6 +5,14 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
+# Sample input files
+*.csv
+*.xls
+*.xlsx
+
+# Sample output files
+*.vcf
+
 # Runtime data
 pids
 *.pid
