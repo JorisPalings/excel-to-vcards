@@ -33,8 +33,9 @@ Only the `-i` or `--input` option is required.
 For minimum required configuration, the input .csv, .xls or .xlsx file should look as follows:
 ![Input file example](/../screenshots/screenshots/sample-input.png?raw=true)
 
-To omit header rows, use the `-s` (or `--start`) option.
-To omit trailing tows, use the `-e` (or `--end`) option.
+* To omit header rows, use the `-s` (or `--start`) option.
+* To omit trailing rows, use the `-e` (or `--end`) option.
+
 For example: to omit the first row, use `-s 2` or `--start 2` to start with the second row.
 
 ## Built with
