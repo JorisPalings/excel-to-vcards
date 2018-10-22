@@ -12,7 +12,7 @@ Command-line tool to easily convert Excel files (.csv, .xls, .xlsx) to vCards (.
 npm install
 ```
 
-### Usage
+## Usage
 
 ```
 node index [options]
