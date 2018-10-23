@@ -1,7 +1,7 @@
 {
   "name": "excel-to-vcards",
   "version": "1.0.0",
-  "description": "Convert .csv files to .vcf files",
+  "description": "Convert .csv, .xls and .xlsx files to .vcf files",
   "main": "index.js",
   "scripts": {},
   "author": "Joris Palings",
