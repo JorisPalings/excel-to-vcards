@@ -1,5 +1,5 @@
 {
-  "name": "excel2vcard",
+  "name": "excel-to-vcards",
   "version": "1.0.0",
   "description": "Convert .csv files to .vcf files",
   "main": "index.js",
