@@ -38,10 +38,9 @@ program
   if (program.input) {
     if (isInputFileReadable(program.input)) {
       const contacts = await parseInputFileToContacts(program.input);
-      let contactsAsVcards = '';
-      contacts.forEach(contact => {
-        contactsAsVcards += convertContactToVcard(contact);
-      });
+      const contactsAsVcards = contacts.reduce((contactsAsVcards, contact) => {
+        return contactsAsVcards + convertContactToVcard(contact);
+      }, '');
       fs.writeFileSync(createOutputFilePath(), contactsAsVcards);
       console.info(`Successfully converted ${contacts.length} rows to contacts.`);
     }
@@ -113,12 +112,10 @@ async function parseInputFileToContacts(inputFile) {
   const inputFileExtension = getFileExtension(inputFile);
   switch(inputFileExtension) {
     case '.csv':
-      const contactsFromCsv = await parseCsvFileToContacts(inputFile);
-      return contactsFromCsv;
+      return parseCsvFileToContacts(inputFile);
     case '.xlsx':
     case '.xls':
-      const contactsFromXlsx = await parseXlsxFileToContacts(inputFile);
-      return contactsFromXlsx;
+      return parseXlsxFileToContacts(inputFile);
     default:
       console.error(`Unable to parse "${inputFile}": "${inputFileExtension}" is not a supported format`);
   }
@@ -133,8 +130,8 @@ async function parseCsvFileToContacts(inputFile) {
   return new Promise(async (resolve, reject) => {
     try {
       const csvDataStream = fs.createReadStream(inputFile);
-      const contacts = await parseCsvDataStreamToContacts(csvDataStream, ';');
-      resolve(contacts);
+      const contactsPromise = parseCsvDataStreamToContacts(csvDataStream, ';');
+      resolve(contactsPromise);
     } catch(error) {
       reject(`Unable to parse input .csv file:`, error);
     }
@@ -168,8 +165,8 @@ async function parseXlsxFileToContacts(inputFile) {
           csvDataStream.push(csvData);
           csvDataStream.push(null);
   
-          const contacts = await parseCsvDataStreamToContacts(csvDataStream, ',');
-          resolve(contacts);
+          const contactsPromise = parseCsvDataStreamToContacts(csvDataStream, ',');
+          resolve(contactsPromise);
         });
     } catch(error) {
       reject(`Unable to parse input .xls(x) file:`, error);
@@ -186,7 +183,7 @@ async function parseXlsxFileToContacts(inputFile) {
 async function parseCsvDataStreamToContacts(csvDataStream, delimiter) {
   return new Promise((resolve, reject) => {
     try {
-      let contacts = [];
+      const contacts = [];
       csvDataStream
         .pipe(csvParse({ delimiter }))
         .on('data', contact => {
@@ -213,13 +210,7 @@ async function parseCsvDataStreamToContacts(csvDataStream, delimiter) {
 function stripUnwantedRows(rows) {
   const startRow = program.start ? program.start - 1 : 0; // shift from 1-based to 0-based
   const endRow = program.end;
-  let wantedRows = [];
-  if (endRow) {
-    wantedRows = rows.slice(startRow, endRow);
-  } else {
-    wantedRows = rows.slice(startRow);
-  }
-  return wantedRows;
+  return endRow ? rows.slice(startRow, endRow) : rows.slice(startRow);
 }
 
 /**
@@ -264,8 +255,7 @@ function formatCurrentDateAsISO() {
  * @returns {string} The contact converted to a vCard string.
  */
 function convertContactToVcard(contact) {
-  let vcardString = 'BEGIN:VCARD\n' + 
-    'VERSION:4.0\n';
+  let vcardString = 'BEGIN:VCARD\n' + 'VERSION:4.0\n';
   if (contact.firstName || contact.lastName) {
     vcardString += `N:${contact.lastName ? contact.lastName : ''};${contact.firstName ? contact.firstName : ''};;;\n` +
     `FN:${contact.firstName} ${contact.lastName}\n`;
@@ -276,7 +266,6 @@ function convertContactToVcard(contact) {
   if (contact.emailAddress) {
     vcardString += `EMAIL:${contact.emailAddress}\n`;
   }
-  vcardString += `REV:${formatCurrentDateAsISO()}\n` + 
-    'END:VCARD\n';
-  return vcardString
+  
+  return vcardString + `REV:${formatCurrentDateAsISO()}\n` + 'END:VCARD\n';
 }
